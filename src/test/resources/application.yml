@@ -1,0 +1,6 @@
+application:
+  in-path: classpath:airtravel.csv
+  out-path: file:./target/faked-airtravel.csv
+  faked-columns:
+    - Month
+    - 1959

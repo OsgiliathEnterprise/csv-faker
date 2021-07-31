@@ -1,0 +1,27 @@
+{
+  "groups": [
+    {
+      "name": "application",
+      "type": "com.thalesgroup.is.data.config.ApplicationProperties",
+      "sourceType": "com.thalesgroup.is.data.config.ApplicationProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "application.faked-columns",
+      "type": "java.util.Collection<java.lang.String>",
+      "sourceType": "com.thalesgroup.is.data.config.ApplicationProperties"
+    },
+    {
+      "name": "application.in-path",
+      "type": "java.lang.String",
+      "sourceType": "com.thalesgroup.is.data.config.ApplicationProperties"
+    },
+    {
+      "name": "application.out-path",
+      "type": "java.lang.String",
+      "sourceType": "com.thalesgroup.is.data.config.ApplicationProperties"
+    }
+  ],
+  "hints": []
+}
