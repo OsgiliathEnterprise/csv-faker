@@ -29,6 +29,7 @@ public class ApplicationProperties {
 	private Collection<String> fakedColumns;
 	private String inPath;
 	private String outPath;
+	private Character delimiter = ',';
 
 	public Collection<String> getFakedColumns() {
 		return fakedColumns;
@@ -52,5 +53,13 @@ public class ApplicationProperties {
 
 	public void setOutPath(String outPath) {
 		this.outPath = outPath;
+	}
+
+	public Character getDelimiter() {
+		return delimiter;
+	}
+
+	public void setDelimiter(Character delimiter) {
+		this.delimiter = delimiter;
 	}
 }

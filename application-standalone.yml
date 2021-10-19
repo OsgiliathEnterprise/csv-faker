@@ -4,3 +4,4 @@ application:
   faked-columns:
     - Month
     - 1959
+  delimiter: ';' # optional, defaults to ","

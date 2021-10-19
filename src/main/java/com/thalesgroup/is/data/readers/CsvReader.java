@@ -20,7 +20,10 @@ package com.thalesgroup.is.data.readers;
  * #L%
  */
 
-import com.opencsv.CSVReader;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReaderBuilder;
+import com.thalesgroup.is.data.config.ApplicationProperties;
 import com.thalesgroup.is.data.model.csv.CsvRow;
 import com.thalesgroup.is.data.model.csv.CsvWorksheet;
 import com.thalesgroup.is.data.states.CsvRowReader;
@@ -39,17 +42,26 @@ import java.util.stream.StreamSupport;
 public class CsvReader implements ResourceReader<CsvWorksheet> {
 
 	private final CsvRowReader csvRowReader;
+	private final ApplicationProperties applicationProperties;
 
-	public CsvReader(CsvRowReader csvRowReader) {
+	public CsvReader(CsvRowReader csvRowReader, ApplicationProperties applicationProperties) {
 		this.csvRowReader = csvRowReader;
 
+		this.applicationProperties = applicationProperties;
 	}
 
 	@Override
 	public CsvWorksheet loadWorksheet(Path path) throws IOException {
 		CsvWorksheet worksheet = new CsvWorksheet();
+		CSVParser parser = new CSVParserBuilder()
+				.withSeparator(applicationProperties.getDelimiter())
+				.withIgnoreQuotations(true)
+				.build();
 		try (Reader reader = Files.newBufferedReader(path)) {
-			final com.opencsv.CSVReader csvReader = new CSVReader(reader);
+			final com.opencsv.CSVReader csvReader =
+					new CSVReaderBuilder(reader)
+							.withCSVParser(parser).build();
+					// new CSVReader(reader);
 			Optional<java.util.stream.Stream<String[]>> rowsAsStream = Optional.ofNullable(StreamSupport.stream(
 					Spliterators.spliteratorUnknownSize(csvReader.iterator(), Spliterator.ORDERED),
 					false));
