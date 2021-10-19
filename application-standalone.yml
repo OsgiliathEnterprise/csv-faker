@@ -1,0 +1,6 @@
+application:
+  in-path: file:///Users/charliemordant/Code/Sources/THALES/faker/src/test/resources/airtravel.csv
+  out-path: file:///Users/charliemordant/Code/Sources/THALES/faker/target/standalone-faked-airtravel.csv
+  faked-columns:
+    - Month
+    - 1959

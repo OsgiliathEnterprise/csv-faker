@@ -1,1 +1,4 @@
 target/
+.mvn/wrapper/wrapper.iml
+faker.iml
+.idea

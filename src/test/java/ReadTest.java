@@ -18,9 +18,9 @@
  * #L%
  */
 import com.opencsv.exceptions.CsvException;
-import com.thalesgroup.is.data.CsvReader;
+import com.thalesgroup.is.data.readers.CsvReader;
 import com.thalesgroup.is.data.FakerBoostrap;
-import com.thalesgroup.is.data.model.CsvWorksheet;
+import com.thalesgroup.is.data.model.csv.CsvWorksheet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,7 @@ import java.nio.file.Path;
 @SpringBootTest(classes = FakerBoostrap.class)
 @ExtendWith(SpringExtension.class)
 public class ReadTest {
+
 	@Autowired
 	private CsvReader csvReader;
 
@@ -43,7 +44,7 @@ public class ReadTest {
 	public void testWorksheetColumnheaderWhileReadCsvWithHeaderAndLoad() throws CsvException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		Path testFileWithHeaders = Path.of(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
-		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders, true);
+		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders);
 		assertThat(4).isEqualTo(worksheet.getHeaderRow().get().getCells().size());
 	}
 
@@ -51,7 +52,7 @@ public class ReadTest {
 	public void testWorksheetRowsWhileReadCsvWithLoad() throws CsvException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		Path testFileWithHeaders = Path.of(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
-		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders, true);
+		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders);
 		assertThat(12).isEqualTo(worksheet.getRows().size());
 	}
 
@@ -59,7 +60,7 @@ public class ReadTest {
 	public void testWorksheetCellsWhileReadCsvWithHeaderAndLoad() throws CsvException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		Path testFileWithHeaders = Path.of(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
-		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders, true);
+		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders);
 		assertThat(52).isEqualTo(worksheet.getCells().size());
 	}
 }

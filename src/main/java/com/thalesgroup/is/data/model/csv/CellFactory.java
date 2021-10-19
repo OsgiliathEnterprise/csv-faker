@@ -1,4 +1,4 @@
-package com.thalesgroup.is.data.states;
+package com.thalesgroup.is.data.model.csv;
 
 /*-
  * #%L
@@ -20,34 +20,31 @@ package com.thalesgroup.is.data.states;
  * #L%
  */
 
-import com.thalesgroup.is.data.model.csv.CellFactory;
-
 import com.thalesgroup.is.data.model.csv.CsvCell;
+import com.thalesgroup.is.data.model.csv.CsvHeaderCell;
+import com.thalesgroup.is.data.model.csv.CsvHeaderRow;
 import com.thalesgroup.is.data.model.csv.CsvRow;
-import io.vavr.collection.Stream;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
-public class CsvRowReader {
-
-	private final CellFactory cellFactory;
-
-	public CsvRowReader(CellFactory cellFactory) {
-		this.cellFactory = cellFactory;
+public class CellFactory {
+	public CsvCell createCell(Integer columnIndex, Integer rowIndex, String value) {
+		if (isHeaderRow(rowIndex)) {
+			return new CsvHeaderCell(columnIndex, rowIndex, value);
+		}
+		return new CsvCell(columnIndex, rowIndex, value);
 	}
 
-	public Optional<? extends CsvRow> read(String[] line, int rowIndex) {
-		List<? extends CsvCell> cells = Stream.of(line)
-				.filter((String value) -> null != value && !value.isEmpty())
-				.zipWithIndex((String value, Integer columnIndex) -> cellFactory.createCell(columnIndex, rowIndex, value.trim())).collect(Collectors.toList());
-		if (!cells.isEmpty()) {
-			CsvRow ret = cellFactory.createRow(rowIndex == 0, cells);
-			return Optional.of(ret);
+	private boolean isHeaderRow(Integer rowIndex) {
+		return rowIndex == 0;
+	}
+
+	public CsvRow createRow(Boolean isHeader, List<? extends CsvCell> cells) {
+		if (isHeader) {
+			return new CsvHeaderRow((List<CsvHeaderCell>) cells);
 		}
-		return Optional.<CsvRow> empty();
+		return new CsvRow(cells);
 	}
 }

@@ -17,13 +17,17 @@
  * limitations under the License.
  * #L%
  */
+import com.thalesgroup.is.data.readers.CsvReader;
 import com.thalesgroup.is.data.FakerBoostrap;
-import com.thalesgroup.is.data.FakerProcessHandler;
-import com.thalesgroup.is.data.model.CsvWorksheet;
+import com.thalesgroup.is.data.handlers.CsvFakerProcessHandler;
+import com.thalesgroup.is.data.config.ApplicationProperties;
+import com.thalesgroup.is.data.model.csv.CsvWorksheet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
@@ -35,13 +39,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FakerTest {
 
 	@Autowired
-	private FakerProcessHandler handler;
+	private CsvFakerProcessHandler handler;
+	@Autowired
+	private CsvReader csvReader;
+	@Autowired
+	private ApplicationProperties applicationProperties;
+	@Autowired
+	private ResourceLoader resourceLoader;
+
+
 	@Test
 	public void givenACsvWithConfiguredColumnToFakeWhenTheFakerProcessorPassThenColumnsAreFaked() throws IOException {
-		CsvWorksheet worksheet = handler.chain();
-		assertThat(worksheet.getColumns().get(0).getCells().get(1).getValue()).isNotEqualTo("JAN");
-		assertThat(worksheet.getColumns().get(1).getCells().get(1).getValue()).isEqualTo("340");
-		assertThat(worksheet.getColumns().get(2).getCells().get(1).getValue()).isNotEqualTo("360");
-		assertThat(worksheet.getColumns().get(3).getCells().get(1).getValue()).isEqualTo("417");
+		handler.chain();
+		Resource in =  resourceLoader.getResource(applicationProperties.getOutPath());
+		CsvWorksheet out = csvReader.loadWorksheet(in.getFile().toPath());
+		assertThat(out.getColumns().get(0).getCells().get(1).getValue()).isNotEqualTo("JAN");
+		assertThat(out.getColumns().get(1).getCells().get(1).getValue()).isEqualTo("340");
+		assertThat(out.getColumns().get(2).getCells().get(1).getValue()).isNotEqualTo("360");
+		assertThat(out.getColumns().get(3).getCells().get(1).getValue()).isEqualTo("417");
 	}
 }
