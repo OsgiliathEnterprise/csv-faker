@@ -16,21 +16,20 @@
         <java.version>17</java.version>
         <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
     </properties>
-<organization>
-    <name>Osgiliath</name>
-</organization>
+    <organization>
+        <name>Osgiliath</name>
+    </organization>
     <inceptionYear>2021</inceptionYear>
-<contributors>
-
-    <contributor>
-        <name>Charlie Mordant</name>
-        <roles>
-            <role>
-                Developer
-            </role>
-        </roles>
-    </contributor>
-</contributors>
+    <contributors>
+        <contributor>
+            <name>Charlie Mordant</name>
+            <roles>
+                <role>
+                    Developer
+                </role>
+            </roles>
+        </contributor>
+    </contributors>
     <build>
         <plugins>
             <plugin>
@@ -129,5 +128,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Maven packages</name>
+            <url>https://maven.pkg.github.com/OsgiliathEnterprise/csv-faker</url>
+        </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>Maven packages</name>
+            <url>https://maven.pkg.github.com/OsgiliathEnterprise/csv-faker</url>
+        </snapshotRepository>
+    </distributionManagement>
     
 </project>
