@@ -20,6 +20,7 @@ package com.thalesgroup.is.data.config;
  * #L%
  */
 
+import com.opencsv.CSVWriter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Collection;
@@ -29,7 +30,7 @@ public class ApplicationProperties {
 	private Collection<String> fakedColumns;
 	private String inPath;
 	private String outPath;
-	private Character delimiter = ',';
+	private Character delimiter = CSVWriter.DEFAULT_SEPARATOR;
 
 	public Collection<String> getFakedColumns() {
 		return fakedColumns;

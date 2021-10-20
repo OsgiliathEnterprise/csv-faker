@@ -20,7 +20,6 @@ package com.thalesgroup.is.data.fakers;
  * #L%
  */
 
-import com.github.javafaker.Faker;
 import com.thalesgroup.is.data.model.csv.CsvCell;
 import com.thalesgroup.is.data.model.csv.CsvColumn;
 import com.thalesgroup.is.data.model.csv.CsvWorksheet;
@@ -28,23 +27,24 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Component
-public class ColumnFaker implements ObjectFaker<CsvWorksheet> {
+public class ColumnFaker extends AbstractFaker<CsvWorksheet> {
 
 	@Override
 	public void fake(CsvWorksheet worksheet, Collection<String> fakedColumns) {
-		Faker faker = Faker.instance(new Random());
+
 		List<CsvColumn> columns = worksheet.getColumns();
 		columns.stream()
 				.filter((CsvColumn column) -> column.getHeaderCell().isPresent())
 				.filter((CsvColumn column) -> fakedColumns.contains(column.getHeaderCell().get().getValue()))
 				.flatMap((CsvColumn column) -> column.getCells().stream().skip(1))
 				.map((CsvCell cell) -> {
-					cell.setValue(faker.dragonBall().character());
+					cell.setValue(fake((String) cell.getValue()));
 					return cell;
 				}).collect(Collectors.toList());
 	}
+
+
 }

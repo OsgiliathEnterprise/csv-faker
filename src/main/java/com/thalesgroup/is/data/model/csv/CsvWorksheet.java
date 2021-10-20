@@ -37,7 +37,7 @@ public class CsvWorksheet implements ModeledElement {
 	}
 
 	public Optional<CsvHeaderRow> getHeaderRow() {
-		return !rows.isEmpty()? Optional.of((CsvHeaderRow) rows.iterator().next()):Optional.empty();
+		return !rows.isEmpty() ? Optional.of((CsvHeaderRow) rows.iterator().next()):Optional.empty();
 	}
 
 	public List<CsvColumn> getColumns() {

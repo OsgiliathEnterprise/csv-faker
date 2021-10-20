@@ -21,6 +21,11 @@ package com.thalesgroup.is.data.writers;
  */
 
 import com.opencsv.CSVWriter;
+import com.opencsv.ICSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.thalesgroup.is.data.config.ApplicationProperties;
+import com.thalesgroup.is.data.dto.RowAndIndex;
 import com.thalesgroup.is.data.model.csv.CsvCell;
 import com.thalesgroup.is.data.model.csv.CsvRow;
 import com.thalesgroup.is.data.model.csv.CsvWorksheet;
@@ -31,25 +36,34 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import io.vavr.collection.Stream;
 
 @Component
 public class CsvWriter implements ModelWriter<CsvWorksheet> {
 
+	private final ApplicationProperties applicationProperties;
+
+	public CsvWriter(ApplicationProperties applicationProperties) {
+
+		this.applicationProperties = applicationProperties;
+	}
 	@Override
 	public void write(CsvWorksheet worksheet, Path out) throws IOException {
 		try (Writer writer = Files.newBufferedWriter(out)) {
-			CSVWriter csvWriter = new CSVWriter(writer,
-					CSVWriter.DEFAULT_SEPARATOR,
-					CSVWriter.NO_QUOTE_CHARACTER,
-					CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-					CSVWriter.DEFAULT_LINE_END);
-			Stream.concat(Collections.singleton(worksheet.getHeaderRow().get()).stream(), worksheet.getRows().stream())
-			.map(
-					(CsvRow row) -> row.getCells().stream().map(CsvCell::getValue).collect(Collectors.toList()).toArray(String[]::new)
-			).forEach((String[] rowAsString) ->
-				csvWriter.writeNext(rowAsString)
-			);
+
+			CustomCsvWriter csvWriter = new CustomCsvWriter(writer, applicationProperties.getDelimiter(), ICSVWriter.DEFAULT_QUOTE_CHARACTER, ICSVWriter.DEFAULT_ESCAPE_CHARACTER, ICSVWriter.DEFAULT_LINE_END);
+			Stream.ofAll(java.util.stream.Stream.concat(Collections.singleton(worksheet.getHeaderRow().get()).stream(), worksheet.getRows().stream()))
+			.zipWithIndex(
+					(CsvRow row, Integer index) -> new RowAndIndex(index, row.getCells().stream().map(CsvCell::getValue).collect(Collectors.toList()).toArray(String[]::new))
+			).forEach((RowAndIndex rowAsString) -> {
+				if (rowAsString.getIndex().equals(0)) {
+					csvWriter.writeNext(rowAsString.getRow(), true);
+				} else {
+					csvWriter.writeNext(rowAsString.getRow(), false);
+				}
+			});
+			csvWriter.flush();
+			csvWriter.close();
 		}
 	}
 }

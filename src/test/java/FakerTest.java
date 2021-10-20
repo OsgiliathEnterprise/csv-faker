@@ -22,6 +22,7 @@ import com.thalesgroup.is.data.FakerBoostrap;
 import com.thalesgroup.is.data.handlers.CsvFakerProcessHandler;
 import com.thalesgroup.is.data.config.ApplicationProperties;
 import com.thalesgroup.is.data.model.csv.CsvWorksheet;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +52,21 @@ public class FakerTest {
 	@Test
 	public void givenACsvWithConfiguredColumnToFakeWhenTheFakerProcessorPassThenColumnsAreFaked() throws IOException {
 		handler.chain();
-		Resource in =  resourceLoader.getResource(applicationProperties.getOutPath());
-		CsvWorksheet out = csvReader.loadWorksheet(in.getFile().toPath());
+		Resource outPath =  resourceLoader.getResource(applicationProperties.getOutPath());
+		CsvWorksheet out = csvReader.loadWorksheet(outPath.getFile().toPath());
 		assertThat(out.getColumns().get(0).getCells().get(1).getValue()).isNotEqualTo("JAN");
 		assertThat(out.getColumns().get(1).getCells().get(1).getValue()).isEqualTo("340");
 		assertThat(out.getColumns().get(2).getCells().get(1).getValue()).isNotEqualTo("360");
 		assertThat(out.getColumns().get(3).getCells().get(1).getValue()).isEqualTo("417");
 	}
+	@Test
+	public void givenACsvColumWithIntegerToFakeWhenTheFakerProcessorPassThenColumnsAreFakedAndInteger() throws IOException {
+		handler.chain();
+		Resource outPath =  resourceLoader.getResource(applicationProperties.getOutPath());
+		CsvWorksheet out = csvReader.loadWorksheet(outPath.getFile().toPath());
+		Integer.parseInt((String) out.getColumns().get(1).getCells().get(1).getValue());
+		Integer.parseInt((String) out.getColumns().get(2).getCells().get(1).getValue());
+		Integer.parseInt((String) out.getColumns().get(3).getCells().get(1).getValue());
+	}
+
 }
