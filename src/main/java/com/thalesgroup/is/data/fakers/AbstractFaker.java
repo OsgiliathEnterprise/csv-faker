@@ -23,20 +23,27 @@ package com.thalesgroup.is.data.fakers;
 import com.github.javafaker.Faker;
 import com.thalesgroup.is.data.model.ModeledElement;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 import java.util.Random;
 
 public abstract class AbstractFaker<T extends ModeledElement> implements ObjectFaker<T> {
 	protected String fake(String value) {
-		return getRandomInteger(value).orElseGet(() -> getRandomString());
+		return getRandomInteger(value)
+				.orElseGet(() ->
+						getRandomLocalDate(value)
+								.orElseGet(() ->
+										getRandomString()));
 	}
 
 	private String getRandomString() {
 		Faker faker = Faker.instance(new Random());
 		return new StringBuilder()
-				//.append('"')
 				.append(faker.dragonBall().character())
-				//.append('"')
 				.toString();
 	}
 
@@ -64,5 +71,36 @@ public abstract class AbstractFaker<T extends ModeledElement> implements ObjectF
 			}
 		}
 		return Optional.empty();
+	}
+
+	private Optional<String> getRandomLocalDate(String value) {
+		for (SupportedLocalDateFormat supportedLocalDateFormat: SupportedLocalDateFormat.values()) {
+			try {
+				LocalDate date = LocalDate.parse(value, DateTimeFormatter.ofPattern(supportedLocalDateFormat.format));
+				Random random = new Random();
+				Integer bound = 200;
+				Integer randomResult = random.ints(100, bound)
+						.findFirst()
+						.getAsInt();
+				return Optional.of(date.minus(randomResult, ChronoUnit.DAYS).format(DateTimeFormatter.ofPattern(supportedLocalDateFormat.format)));
+			} catch (DateTimeParseException dtpe) {
+
+			}
+		}
+		return Optional.empty();
+	}
+
+	private enum SupportedLocalDateFormat {
+		ISO("yyyy-MM-dd"),
+		DDMMYYYSLASH("dd/MM/yyyy"),
+		DDMMYYYDASH("dd-MM-yyyy"),
+		FULLTEXT("E, MMM dd yyyy");
+
+		private final String format;
+
+		SupportedLocalDateFormat(String format) {
+
+			this.format = format;
+		}
 	}
 }

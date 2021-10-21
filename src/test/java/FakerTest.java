@@ -22,6 +22,7 @@ import com.thalesgroup.is.data.FakerBoostrap;
 import com.thalesgroup.is.data.handlers.CsvFakerProcessHandler;
 import com.thalesgroup.is.data.config.ApplicationProperties;
 import com.thalesgroup.is.data.model.csv.CsvWorksheet;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,6 +60,7 @@ public class FakerTest {
 		assertThat(out.getColumns().get(2).getCells().get(1).getValue()).isNotEqualTo("360");
 		assertThat(out.getColumns().get(3).getCells().get(1).getValue()).isEqualTo("417");
 	}
+
 	@Test
 	public void givenACsvColumWithIntegerToFakeWhenTheFakerProcessorPassThenColumnsAreFakedAndInteger() throws IOException {
 		handler.chain();
@@ -67,6 +69,16 @@ public class FakerTest {
 		Integer.parseInt((String) out.getColumns().get(1).getCells().get(1).getValue());
 		Integer.parseInt((String) out.getColumns().get(2).getCells().get(1).getValue());
 		Integer.parseInt((String) out.getColumns().get(3).getCells().get(1).getValue());
+	}
+
+	@Test
+	public void givenACsvColumWithStringToFakeWhenTheFakerProcessorPassThenColumnsAreFakedAndString() throws IOException {
+		handler.chain();
+		Resource outPath =  resourceLoader.getResource(applicationProperties.getOutPath());
+		CsvWorksheet out = csvReader.loadWorksheet(outPath.getFile().toPath());
+		Assertions.assertThrows(NumberFormatException.class, () -> {
+			Integer.parseInt((String)out.getColumns().get(0).getCells().get(1).getValue());
+		});
 	}
 
 }
