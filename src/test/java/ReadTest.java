@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @SpringBootTest(classes = FakerBoostrap.class)
 @ExtendWith(SpringExtension.class)
@@ -43,7 +44,7 @@ public class ReadTest {
 	@Test
 	public void testWorksheetColumnheaderWhileReadCsvWithHeaderAndLoad() throws CsvException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
-		Path testFileWithHeaders = Path.of(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
+		Path testFileWithHeaders = Paths.get(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
 		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders);
 		assertThat(4).isEqualTo(worksheet.getHeaderRow().get().getCells().size());
 	}
@@ -51,7 +52,7 @@ public class ReadTest {
 	@Test
 	public void testWorksheetRowsWhileReadCsvWithLoad() throws CsvException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
-		Path testFileWithHeaders = Path.of(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
+		Path testFileWithHeaders = Paths.get(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
 		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders);
 		assertThat(12).isEqualTo(worksheet.getRows().size());
 	}
@@ -59,7 +60,7 @@ public class ReadTest {
 	@Test
 	public void testWorksheetCellsWhileReadCsvWithHeaderAndLoad() throws CsvException, IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
-		Path testFileWithHeaders = Path.of(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
+		Path testFileWithHeaders = Paths.get(URI.create("file:///" + classLoader.getResource("airtravel.csv").getPath()));
 		CsvWorksheet worksheet = csvReader.loadWorksheet(testFileWithHeaders);
 		assertThat(52).isEqualTo(worksheet.getCells().size());
 	}
