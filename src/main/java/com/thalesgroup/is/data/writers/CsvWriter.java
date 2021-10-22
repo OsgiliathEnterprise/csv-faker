@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import io.vavr.collection.Stream;
 
@@ -54,7 +55,11 @@ public class CsvWriter implements ModelWriter<CsvWorksheet> {
 			CustomCsvWriter csvWriter = new CustomCsvWriter(writer, applicationProperties.getDelimiter(), ICSVWriter.DEFAULT_QUOTE_CHARACTER, ICSVWriter.DEFAULT_ESCAPE_CHARACTER, ICSVWriter.DEFAULT_LINE_END);
 			Stream.ofAll(java.util.stream.Stream.concat(Collections.singleton(worksheet.getHeaderRow().get()).stream(), worksheet.getRows().stream()))
 			.zipWithIndex(
-					(CsvRow row, Integer index) -> new RowAndIndex(index, row.getCells().stream().map(CsvCell::getValue).collect(Collectors.toList()).toArray(String[]::new))
+					(CsvRow row, Integer index) -> {
+						List<Object> rowCells = row.getCells().stream().map(CsvCell::getValue).collect(Collectors.toList());
+						String [] asArray = rowCells.toArray(new String[rowCells.size()]);
+						return new RowAndIndex(index, asArray);
+					}
 			).forEach((RowAndIndex rowAsString) -> {
 				if (rowAsString.getIndex().equals(0)) {
 					csvWriter.writeNext(rowAsString.getRow(), true);

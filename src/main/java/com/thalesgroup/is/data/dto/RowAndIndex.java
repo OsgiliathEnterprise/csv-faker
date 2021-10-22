@@ -20,8 +20,6 @@ package com.thalesgroup.is.data.dto;
  * #L%
  */
 
-import com.thalesgroup.is.data.model.csv.CsvRow;
-
 public class RowAndIndex {
 	private final Integer index;
 	private final String[] row;
@@ -39,6 +37,4 @@ public class RowAndIndex {
 		this.index = index;
 		this.row = row;
 	}
-
-
 }

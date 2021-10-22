@@ -28,6 +28,8 @@ import com.thalesgroup.is.data.model.csv.CsvRow;
 import com.thalesgroup.is.data.model.csv.CsvWorksheet;
 import com.thalesgroup.is.data.states.CsvRowReader;
 import io.vavr.collection.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -43,6 +45,7 @@ public class CsvReader implements ResourceReader<CsvWorksheet> {
 
 	private final CsvRowReader csvRowReader;
 	private final ApplicationProperties applicationProperties;
+	private static Logger log = LoggerFactory.getLogger(CsvReader.class);
 
 	public CsvReader(CsvRowReader csvRowReader, ApplicationProperties applicationProperties) {
 		this.csvRowReader = csvRowReader;
@@ -52,6 +55,7 @@ public class CsvReader implements ResourceReader<CsvWorksheet> {
 
 	@Override
 	public CsvWorksheet loadWorksheet(Path path) throws IOException {
+		log.info ("parsing csv at path: {} with deliminter: {}", path.toString(), applicationProperties.getDelimiter());
 		CsvWorksheet worksheet = new CsvWorksheet();
 		CSVParser parser = new CSVParserBuilder()
 				.withSeparator(applicationProperties.getDelimiter())
@@ -61,7 +65,6 @@ public class CsvReader implements ResourceReader<CsvWorksheet> {
 			final com.opencsv.CSVReader csvReader =
 					new CSVReaderBuilder(reader)
 							.withCSVParser(parser).build();
-					// new CSVReader(reader);
 			Optional<java.util.stream.Stream<String[]>> rowsAsStream = Optional.ofNullable(StreamSupport.stream(
 					Spliterators.spliteratorUnknownSize(csvReader.iterator(), Spliterator.ORDERED),
 					false));
@@ -70,7 +73,7 @@ public class CsvReader implements ResourceReader<CsvWorksheet> {
 							Stream.ofAll(rs)
 									.filter((String[] r) -> null != r && r.length > 0)
 									.zipWithIndex((String[] r, Integer rowIndex) -> csvRowReader.read(r, rowIndex)
-									).filter(o -> !o.isEmpty()).map(Optional::get)
+									).filter(Optional::isPresent).map(Optional::get)
 									.collect(Collectors.toList())
 					).orElseGet(ArrayList::new);
 
